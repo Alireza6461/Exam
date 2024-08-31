@@ -1,0 +1,10 @@
+package com.project.azmoon.repository;
+
+import com.project.azmoon.domain.StudentAnswerTestQuestion;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface StudentAnswerTestQuestionRepository extends JpaRepository<StudentAnswerTestQuestion,Long>, JpaSpecificationExecutor<StudentAnswerTestQuestion> {
+}
