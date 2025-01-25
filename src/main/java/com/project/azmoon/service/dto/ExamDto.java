@@ -19,6 +19,10 @@ public class ExamDto extends BaseDto<Long> {
 
     private String comment;
 
+    private LocalTime finishTime;
+
+    private LocalTime startTime;
+
     private LocalDate date;
 
     private int duration;

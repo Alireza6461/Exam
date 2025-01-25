@@ -18,4 +18,6 @@ public interface TeacherRepository extends UserRepository<Teacher> {
     List<Teacher> findByIsActiveFalse();
 
     List<Teacher> findByIsActiveTrue();
+
+    Teacher findByTeacherCode(String teacherCode);
 }

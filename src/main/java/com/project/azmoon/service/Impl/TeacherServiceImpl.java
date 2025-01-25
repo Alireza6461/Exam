@@ -31,17 +31,6 @@ public class TeacherServiceImpl extends UserServiceImpl<Teacher, TeacherReposito
         }
         teacher.setTeacherCode(teacherCode);
     }
-//    private void setCode(Teacher teacher) {
-//        String employmentYear = String.valueOf(new Date().getYear());
-//        String code = employmentYear.concat(RandomUtil.getRandomNumeric(5));
-//        while (repository.existsByTeacherCode(code)) {
-//            code = employmentYear.concat(RandomUtil.getRandomNumeric(5));
-//        }
-//
-//        teacher.setTeacherCode(
-//                code
-//        );
-//    }
 
     @Override
     public List<Teacher> findByIsActiveFalse() {
@@ -51,5 +40,10 @@ public class TeacherServiceImpl extends UserServiceImpl<Teacher, TeacherReposito
     @Override
     public List<Teacher> findByIsActiveTrue() {
         return repository.findByIsActiveTrue();
+    }
+
+    @Override
+    public Teacher findByTeacherCode(String teacherCode) {
+        return repository.findByTeacherCode(teacherCode);
     }
 }

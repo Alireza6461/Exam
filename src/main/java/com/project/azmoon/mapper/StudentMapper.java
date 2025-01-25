@@ -14,6 +14,8 @@ public interface StudentMapper extends BaseMapper<Student, StudentRegisterReques
 
     StudentRegisterResponseDto convertEntityToStudentRegisterResponseDto(Student student);
 
-    List<StudentCustomDto> convertEntityToCustomCustomDto(List<Student> students);
+    List<StudentCustomDto> convertEntityToStudentCustomDtos(List<Student> students);
+
+    StudentCustomDto convertEntityToStudentCustomDto(Student student);
 
 }

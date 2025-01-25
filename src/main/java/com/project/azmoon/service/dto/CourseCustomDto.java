@@ -1,6 +1,7 @@
 package com.project.azmoon.service.dto;
 
 import com.project.azmoon.base.dto.BaseDto;
+import com.project.azmoon.domain.Teacher;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +13,13 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDto extends BaseDto<Long> {
+public class CourseCustomDto extends BaseDto<Long> {
 
     private String title;
 
     private LocalDate dateOfStart;
 
     private LocalDate dateOfFinish;
+
+    private TeacherCustomDto teacher;
 }

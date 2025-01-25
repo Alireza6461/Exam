@@ -17,6 +17,10 @@ public class TeacherCustomDto extends BaseDto<Long> {
 
     private String lastName;
 
+    private String userName;
+
+    private String teacherCode;
+
     private String mobileNumber;
 
     private String email;

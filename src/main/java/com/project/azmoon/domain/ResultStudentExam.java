@@ -1,5 +1,6 @@
 package com.project.azmoon.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.azmoon.base.domain.BaseEntity;
 import com.project.azmoon.domain.enums.ExamStatus;
@@ -33,6 +34,5 @@ public class ResultStudentExam extends BaseEntity<Long> {
 
     private float score=0;
 
-    public ResultStudentExam(Exam exam, Student student, LocalTime timeFinishExam, ExamStatus examStatus) {
-    }
+
 }

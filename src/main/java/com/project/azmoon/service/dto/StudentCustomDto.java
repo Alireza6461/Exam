@@ -17,6 +17,8 @@ public class StudentCustomDto extends BaseDto<Long> {
 
     private String lastName;
 
+    private String userName;
+
     private String mobileNumber;
 
     private String email;

@@ -34,6 +34,4 @@ public class User extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Lob
-    private byte[] img;
 }

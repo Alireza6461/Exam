@@ -2,26 +2,32 @@ package com.project.azmoon.controller;
 
 import com.project.azmoon.domain.*;
 import com.project.azmoon.domain.enums.ExamStatus;
-import com.project.azmoon.mapper.DescriptiveQuestionMapper;
-import com.project.azmoon.mapper.MultipleChoiceMapper;
-import com.project.azmoon.mapper.QuestionsOfExamMapper;
-import com.project.azmoon.mapper.TestQuestionMapper;
+import com.project.azmoon.domain.enums.Role;
+import com.project.azmoon.mapper.*;
 import com.project.azmoon.service.*;
 import com.project.azmoon.service.dto.*;
+import com.project.azmoon.service.dto.searchdto.StudentRequestSearch;
+import com.project.azmoon.service.dto.searchdto.TeacherRequestSearch;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
+    private final StudentMapper studentMapper;
     private final QuestionsOfExamService questionsOfExamService;
     private final QuestionsOfExamMapper questionsOfExamMapper;
     private final ExamService examService;
@@ -34,89 +40,67 @@ public class StudentController {
     private final DescriptiveQuestionService descriptiveQuestionService;
     private final TestQuestionService testQuestionService;
     private final ResultStudentExamService resultStudentExamService;
+    private final StudentCoursesService studentCoursesService;
+    private final CourseMapper courseMapper;
+    private final CourseService courseService;
+    private final ExamMapper examMapper;
 
     private LocalTime timeStartExam;
     private LocalTime timeFinishExam;
 
-    @GetMapping("/active-student")
-    public void studentIsNotActive(@RequestParam Long id){
-        Optional<Student> student=studentService.findById(id);
-        student.get().setIsActive(true);
-        studentService.save(student.get());
+
+    @PostMapping("/login")
+    public ResponseEntity<StudentCustomDto> loginTeacher(@RequestBody StudentRequestSearch studentRequestSearch) {
+
+        StudentCustomDto studentCustomDto = new StudentCustomDto();
+        Student student = studentService.findByUsername(studentRequestSearch.getUserName());
+        if (studentRequestSearch.getPassword().equals(student.getPassword())) {
+
+            studentCustomDto = studentMapper.convertEntityToStudentCustomDto(student);
+            return ResponseEntity.status(HttpStatus.OK).body(studentCustomDto);
+        } else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(studentCustomDto);
+
 
     }
 
-    @GetMapping("/show-student-is-not-active")
-    public List<Student>  showStudentIsNotActive(){
-        return studentService.findByIsActiveFalse();
+    @PostMapping("/sign-up")
+    public ResponseEntity signUp(@RequestBody StudentRegisterRequestDto studentRegisterRequestDto) {
+        Student student = studentMapper.convertDTOToEntity(studentRegisterRequestDto);
+        student.setRole(Role.STUDENT);
+        studentService.save(student);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/show-student")
-    public List<Student> showStudent(){
-
-        return studentService.findByIsActiveTrue();
+    @GetMapping("/show-courses")
+    public ResponseEntity<List<CourseCustomDto>> showStudentCourses(@RequestParam Long idStudent) {
+        Student student = studentService.findById(idStudent).get();
+        List<Course> courses = studentCoursesService.findByStudent(student)
+                .stream()
+                .map(StudentCourses::getCourse)
+                .collect(Collectors.toList());
+        List<CourseCustomDto> courseCustomDtos = courseMapper.convertEntityToDto(courses);
+        return ResponseEntity.status(HttpStatus.FOUND).body(courseCustomDtos);
     }
 
-    @GetMapping("/showQuestionsOfExam")
-    public List<QuestionsOfExamDto> showQuestionsOfExam (@RequestParam Long idExam,Long idStudent) {
-        Exam exam = examService.findById(idExam).get();
-        Student student=studentService.findById(idStudent).get();
-        ResultStudentExam resultStudentExam=resultStudentExamService.findByStudent(student);
-        timeStartExam = LocalTime.now();
-        timeFinishExam = LocalTime.now().plusMinutes(exam.getDuration());
-
-            if (resultStudentExam.getExamStatus().equals(ExamStatus.NOT_STARTED)) {
-
-                if (exam.getDate().isEqual(LocalDate.now()) &
-                        timeStartExam.isAfter(exam.getStartTime()) &
-                        timeFinishExam.isBefore(exam.getFinishTime())) {
-                    resultStudentExam.setExamStatus(ExamStatus.PROGRESS);
-                    resultStudentExam.setTime(timeFinishExam);
-                    List<QuestionsOfExam> questionsOfExams = questionsOfExamService.findQuestionsOfExamByExam(exam);
-                    List<DescriptiveQuestionDto> descriptiveQuestionDtos = new ArrayList<>();
-                    List<TestQuestionResponseDto> testQuestionResponseDtos = new ArrayList<>();
-                    List<QuestionsOfExamDto> questionsOfExamDtos = new ArrayList<>();
-                    for (int i = 0; i < questionsOfExams.size(); i++) {
-                        descriptiveQuestionDtos.add(i, descriptiveQuestionMapper.convertEntityToDTO(questionsOfExams.get(i).getDescriptiveQuestion()));
-                        List<MultipleChoice> multipleChoices = multipleChoiceService.findMultipleChoicesByTestQuestion(questionsOfExams.get(i).getTestQuestion());
-                        List<MultipleChoiceDto> multipleChoiceDtos = multipleChoiceMapper.convertEntityListToDTOList(multipleChoices);
-                        TestQuestionResponseDto testQuestionResponseDto = new TestQuestionResponseDto(questionsOfExams.get(i).getTestQuestion().getQuestionForm(), multipleChoiceDtos);
-                        testQuestionResponseDtos.add(i, testQuestionResponseDto);
-                        QuestionsOfExamDto questionsOfExamDto = new QuestionsOfExamDto(descriptiveQuestionDtos.get(i), testQuestionResponseDtos.get(i));
-                        questionsOfExamDtos.add(i, questionsOfExamDto);
-                    }
-                    resultStudentExamService.save(resultStudentExam);
-                    return questionsOfExamDtos;
-                } else return null;
-            }else return null;
-    }
-    @PostMapping("/studentAnswerExam")
-    public void studentAnswerExam (@RequestParam Long id,@RequestBody List<StudentAnswerQuestionDto> studentAnswerQuestionDto){
-
-        Student student=studentService.findById(id).get();
-        ResultStudentExam resultStudentExam=resultStudentExamService.findByStudent(student);
-        if (LocalTime.now().isBefore(resultStudentExam.getTime())) {
-            for (int i = 0; i < studentAnswerQuestionDto.size(); i++) {
-                StudentAnswerQuestionDto studentAnswerQuestionDto2 = studentAnswerQuestionDto.get(i);
-                if (studentAnswerQuestionDto2.getAnswerTestQuestion() != null) {
-                    MultipleChoice multipleChoice = multipleChoiceService.findById(studentAnswerQuestionDto2.getAnswerTestQuestion()).get();
-                    StudentAnswerTestQuestion studentAnswerTestQuestion =
-                            new StudentAnswerTestQuestion(testQuestionService.findById(studentAnswerQuestionDto2.getIdQuestion()).get(),
-                                    student, multipleChoice);
-                    studentAnswerTestQuestionService.save(studentAnswerTestQuestion);
-                } else if (studentAnswerQuestionDto2.getAnswerTestQuestion()==null) {
-
-                    DescriptiveQuestion descriptiveQuestion = descriptiveQuestionService.findById(studentAnswerQuestionDto2.getIdQuestion()).get();
-                    StudentAnswerDescriptiveQuestion studentAnswerDescriptiveQuestion =
-                            new StudentAnswerDescriptiveQuestion(descriptiveQuestion,
-                                    student,
-                                    studentAnswerQuestionDto2.getAnswerDescriptiveQuestion());
-
-                    studentAnswerDescriptiveQuestionService.save(studentAnswerDescriptiveQuestion);
-                }
-            }
-            resultStudentExam.setExamStatus(ExamStatus.DONE);
-            resultStudentExamService.save(resultStudentExam);
+    @GetMapping("/show-exam-course")
+    public ResponseEntity<List<ExamDto>> showCourseExams(@RequestParam Long idCourse) {
+        Course course = courseService.findById(idCourse).orElse(null);
+        if (course == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+        List<Exam> exams = examService.findByCourse(course);
+        Iterator<Exam> iterator = exams.iterator();
+        while (iterator.hasNext()) {
+            Exam exam = iterator.next();
+            if (exam.getDate().isBefore(LocalDate.now())) {
+                iterator.remove();  // حذف ایمن از لیست در حین پیمایش
+            }
+        }
+
+        List<ExamDto> examDtos = examMapper.convertEntityListToDTOList(exams);
+        return ResponseEntity.status(HttpStatus.FOUND).body(examDtos);
     }
+
+
 }
+

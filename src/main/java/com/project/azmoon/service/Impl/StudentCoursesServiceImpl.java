@@ -26,4 +26,9 @@ public class StudentCoursesServiceImpl extends BaseEntityServiceImpl<StudentCour
     public List<StudentCourses> findByCourse(Course course) {
         return repository.findByCourse(course);
     }
+
+    @Override
+    public List<StudentCourses> findByStudent(Student student) {
+        return repository.findByStudent(student);
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends UserRepository<Student> {
@@ -14,6 +15,7 @@ public interface StudentRepository extends UserRepository<Student> {
     List<Student> findAll(Specification<Student> spec);
 
     Boolean existsByStudentCode(String studentCode);
+
 
     List<Student> findByIsActiveFalse();
 

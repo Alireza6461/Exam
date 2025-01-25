@@ -10,4 +10,6 @@ public interface TeacherService extends UserService<Teacher> {
     List<Teacher> findByIsActiveFalse();
     List<Teacher> findByIsActiveTrue();
 
+    Teacher findByTeacherCode(String teacherCode);
+
 }

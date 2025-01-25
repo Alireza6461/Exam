@@ -12,7 +12,6 @@ public class StudentAnswerQuestionDto {
 
     private String answerDescriptiveQuestion;
 
-    @Builder.Default
     private Long answerTestQuestion;
 
 }

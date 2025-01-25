@@ -6,17 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDto extends BaseDto<Long> {
+public class MultipleChoiceCustomDto extends BaseDto<Long> {
 
-    private String title;
-
-    private LocalDate dateOfStart;
-
-    private LocalDate dateOfFinish;
+    private String choice;
 }

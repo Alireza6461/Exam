@@ -17,5 +17,7 @@ public interface TeacherMapper extends BaseMapper<Teacher, TeacherRegisterReques
 
     TeacherRegisterResponseDto convertEntityToTeacherRegisterResponseDto(Teacher teacher);
 
+    TeacherCustomDto convertEntityToTeacherCustomDto(Teacher teacher);
+
     List<TeacherCustomDto> convertEntityToTeacherCustomDto(List<Teacher> teachers);
 }

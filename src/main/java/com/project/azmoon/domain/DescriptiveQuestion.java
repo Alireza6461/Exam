@@ -1,5 +1,7 @@
 package com.project.azmoon.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.azmoon.base.domain.BaseEntity;
 import lombok.*;
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class DescriptiveQuestion extends BaseEntity<Long> {
+
 
     private String questionForm;
 

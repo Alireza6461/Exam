@@ -21,8 +21,6 @@ public class StudentRegisterRequestDto extends BaseDto<Long> {
 
     private String password;
 
-    private String role;
-
     private String mobileNumber;
 
     private String email;

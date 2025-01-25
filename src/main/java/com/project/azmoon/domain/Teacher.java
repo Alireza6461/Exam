@@ -1,5 +1,7 @@
 package com.project.azmoon.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,9 @@ public class Teacher extends User {
 
     @Column
     private String email;
+
+    @Column
+    private String mobileNumber;
 
     @OneToMany(mappedBy = "teacher")
     private List<Course> course;

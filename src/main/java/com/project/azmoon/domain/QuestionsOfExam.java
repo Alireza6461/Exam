@@ -1,5 +1,7 @@
 package com.project.azmoon.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.azmoon.base.domain.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
